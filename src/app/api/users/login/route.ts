@@ -16,15 +16,19 @@ export async function POST(request: NextRequest){
         console.log(reqBody);
 
         const user = await User.findOne({email})
-        if (!user){
-            return NextResponse.json({error: " user not found"}, {status:  400}) 
+        if (!user) {
+            return NextResponse.json({ error: "User not found" }, { status: 400 });
         }
-        console.log("user exists");
+        if (!user.isVerified) {
+            return NextResponse.json({ error: "Email not verified" }, { status: 400 });
+        }
+        
+        console.log("user exists and verified");
 
        const validPassword= await bcryptjs.compare(password,user.password)
 
        if (!validPassword){
-        return NextResponse.json({error: "password is invalid"}, {status:  400}) 
+        return NextResponse.json({error: "Password is invalid"}, {status:  400}) 
         }
 
         const tokenData={
